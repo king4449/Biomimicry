@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Biomimicry in Cybersecurity — Defence and Attack Strategies Inspired by Nature</title>
+<style>
+:root{
+  --bg:#1e272e;--page:#ffffff;--text:#2f3640;--primary:#0097e6;
+  --blue:#0984e3;--red:#c23616;--sim:#f1f2f6;--simtx:#dfe6e9;
+  --simbox:#2d3436;--codebg:#1e1e1e;--codetx:#d4d4d4;
+  --warn:#fff3cd;--warntx:#856404;--legal:#e7f3ff;--legalb:#0097e6;
+  --ref:#f8f9fa;--refb:#adb5bd;--case:#fff8e1;--caseb:#f0c040;
+}
+body.dark{
+  --bg:#0d1117;--page:#161b22;--text:#c9d1d9;--primary:#58a6ff;
+  --blue:#58a6ff;--red:#ff7b72;--sim:#21262d;--simtx:#8b949e;
+  --simbox:#010409;--warn:#3b3014;--warntx:#d2a42a;
+  --legal:#0d2033;--legalb:#58a6ff;--ref:#0d1117;--refb:#30363d;
+  --case:#2a2410;--caseb:#d2a42a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);display:flex;justify-content:center;align-items:center;
+  min-height:100vh;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;
+  overflow:hidden;transition:background-color .4s;
+}
+.book-container{
+  position:relative;width:1100px;max-width:98vw;height:800px;max-height:94vh;
+  perspective:2500px;
+}
+.page{
+  position:absolute;inset:0;background:var(--page);
+  box-shadow:0 0 30px rgba(0,0,0,.7);border-radius:5px 15px 15px 5px;
+  padding:32px 42px 42px;overflow-y:auto;transform-origin:left center;
+  transition:transform .8s cubic-bezier(.645,.045,.355,1),opacity .8s,background-color .4s;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  display:flex;flex-direction:column;font-size:.93em;
+  background-image:linear-gradient(to right,rgba(0,0,0,.05),rgba(0,0,0,0) 28px);
+}
+.page>*{flex-shrink:0}
+.page::-webkit-scrollbar{width:8px}
+.page::-webkit-scrollbar-track{background:var(--sim);border-radius:4px}
+.page::-webkit-scrollbar-thumb{background:var(--primary);border-radius:4px}
+
+/* ============ KAPAK ============ */
+.page.cover{
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;justify-content:center;align-items:center;text-align:center;
+}
+body.dark .page.cover{background:linear-gradient(135deg,#010409,#0d1117,#161b22)}
+.cover-meta{
+  font-size:.75em;color:#b2bec3;letter-spacing:3px;
+  text-transform:uppercase;margin-bottom:26px;
+  border:1px solid rgba(255,255,255,.2);
+  padding:6px 18px;border-radius:20px;
+}
+.page.cover h1{
+  font-size:2.9em;margin:0 0 12px;
+  text-shadow:2px 2px 10px rgba(0,0,0,.85);
+  line-height:1.15;letter-spacing:2px;font-weight:800;
+}
+.page.cover h2{
+  font-size:1.18em;font-weight:300;color:#dcdde1;
+  margin:0 0 10px;font-style:italic;max-width:720px;
+  letter-spacing:.5px;
+}
+.cover-divider{
+  width:90px;height:3px;
+  background:linear-gradient(90deg,transparent,#0097e6,transparent);
+  margin:22px auto;border-radius:2px;
+}
+.page.cover .author{
+  font-size:1.15em;font-weight:700;
+  color:#fff;letter-spacing:1px;margin-bottom:26px;
+}
+.cover-warning{
+  background:rgba(255,200,60,.10);
+  border:1.5px solid rgba(240,192,64,.6);
+  border-left:5px solid #f0c040;
+  border-radius:8px;
+  padding:14px 18px;margin-top:20px;max-width:680px;
+  text-align:left;color:#f0c040;
+  font-size:.78em;line-height:1.5;
+}
+.cover-warning strong{
+  display:block;color:#ffd700;font-size:1.05em;
+  margin-bottom:8px;letter-spacing:.5px;
+}
+.cover-warning p{margin:0 0 6px;color:#f0c040;font-size:.98em}
+.cover-warning p:last-child{margin-bottom:0}
+.page.cover .cover-warning p{color:#f0c040;text-align:left}
+.cover-warning p strong{display:inline;margin:0;font-size:1em}
+.cover-warning em{color:#ffd700;font-style:normal;font-weight:600}
+.cover-warning code{
+  background:rgba(0,0,0,.35);padding:1px 5px;
+  border-radius:3px;color:#feca57;font-size:.9em;
+  font-family:'Consolas','Monaco',monospace;
+}
+
+/* ============ SAYFA GENEL ============ */
+.page-header{font-size:.78em;color:#7f8fa6;border-bottom:1px solid var(--sim);padding-bottom:4px;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
+.page h3{color:var(--primary);border-bottom:2px solid var(--primary);padding-bottom:6px;margin:0 0 10px;font-size:1.35em;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.page h3 .badge{background:var(--primary);color:#fff;padding:3px 10px;border-radius:4px;font-size:.66em;font-weight:700;letter-spacing:.5px}
+body.dark .page h3 .badge{color:#0d1117}
+.difficulty{font-size:.6em;padding:2px 8px;border-radius:10px;font-weight:700}
+.diff-beginner{background:#d4edda;color:#155724}
+.diff-intermediate{background:#fff3cd;color:#856404}
+.diff-advanced{background:#f8d7da;color:#721c24}
+body.dark .diff-beginner{background:#1a3a1f;color:#7ee787}
+body.dark .diff-intermediate{background:#3b3014;color:#f0c040}
+body.dark .diff-advanced{background:#3d1518;color:#ff7b72}
+.page p{line-height:1.5;font-size:.94em;text-align:justify;color:var(--text);margin:0 0 8px}
+
+.media-wrap{position:relative;width:100%;height:200px;border-radius:8px;overflow:hidden;margin:4px 0 6px;box-shadow:0 4px 12px rgba(0,0,0,.2);background:#2c5364;display:flex;align-items:center;justify-content:center}
+.media-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+body.dark .media-wrap img{opacity:.85}
+.media-wrap .placeholder{display:none;position:absolute;inset:0;background:linear-gradient(135deg,#0f2027,#2c5364);color:#fff;text-align:center;padding:20px;flex-direction:column;align-items:center;justify-content:center}
+.media-wrap.failed .placeholder{display:flex}
+.media-wrap.failed img{display:none}
+.placeholder .emoji{font-size:2.3em;margin-bottom:6px}
+.placeholder .label{font-size:.9em;font-weight:600;opacity:.9}
+.placeholder .sub{font-size:.72em;opacity:.6;margin-top:2px;font-style:italic}
+.img-caption a{color:inherit}
+.img-caption{font-size:.68em;color:#7f8fa6;text-align:right;margin:-2px 0 8px;font-style:italic;line-height:1.3}
+
+.ethics-warning{background:var(--warn);color:var(--warntx);padding:8px 12px;border-radius:6px;font-size:.78em;font-weight:600;margin-bottom:8px;border-left:4px solid #ffc107;display:flex;align-items:flex-start;gap:8px;line-height:1.4}
+.legal-notice{background:var(--legal);border-left:4px solid var(--legalb);padding:10px 14px;border-radius:6px;font-size:.78em;color:var(--text);margin:10px 0;line-height:1.45}
+.legal-notice strong{color:var(--primary);display:block;margin-bottom:4px;font-size:1em}
+.tech-box{border-left:4px solid var(--primary);padding:8px 12px;background:var(--sim);margin-bottom:8px;border-radius:0 6px 6px 0;font-size:.86em;color:var(--text)}
+.tech-title{font-weight:700;color:var(--primary);margin-bottom:3px;display:block;font-size:.98em}
+
+.team-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.team-box{padding:10px;border-radius:6px;color:var(--text);font-size:.84em}
+.blue-team-box{border-top:3px solid var(--blue);background:rgba(9,132,227,.06)}
+.red-team-box{border-top:3px solid var(--red);background:rgba(194,54,22,.06)}
+body.dark .blue-team-box{background:rgba(88,166,255,.1)}
+body.dark .red-team-box{background:rgba(255,123,114,.1)}
+.team-box h4{margin:0 0 5px;display:flex;align-items:center;gap:5px;font-size:.92em;font-weight:700}
+.blue-team-box h4{color:var(--blue)}
+.red-team-box h4{color:var(--red)}
+.team-box ul{margin:0;padding-left:14px;font-size:.82em}
+.team-box li{margin-bottom:2px;line-height:1.35}
+
+.sim-box{background:var(--simbox);color:var(--simtx);padding:10px 14px;border-radius:6px;font-family:'Courier New',monospace;font-size:.78em;line-height:1.45;margin-top:auto;border-left:5px solid #00b894;margin-bottom:8px}
+.sim-box strong{color:#00b894;display:block;margin-bottom:4px;font-size:.98em}
+.sim-box ol{margin:0;padding-left:16px}
+.sim-box code{color:#feca57}
+
+pre{background:var(--codebg);color:var(--codetx);padding:10px;border-radius:6px;overflow-x:auto;font-size:.74em;line-height:1.35;margin:6px 0;border:1px solid #333;white-space:pre-wrap;word-wrap:break-word}
+code{font-family:'Consolas','Monaco',monospace}
+.keyword{color:#569cd6}.string{color:#ce9178}.comment{color:#6a9955;font-style:italic}.func{color:#dcdcaa}
+
+.metrics-box{display:flex;justify-content:space-around;background:var(--sim);padding:8px 16px;border-radius:6px;margin-top:auto;font-size:.76em;color:var(--text);border:1px solid rgba(0,0,0,.1);flex-wrap:wrap;gap:8px}
+.metrics-box div{text-align:center}
+.metrics-box strong{display:block;color:var(--primary);font-size:1.05em;margin-bottom:2px}
+
+.ref-box{background:var(--ref);border-left:3px solid var(--refb);padding:7px 11px;border-radius:0 6px 6px 0;font-size:.7em;color:var(--text);margin:8px 0;line-height:1.4}
+.ref-box a{color:var(--primary)}
+.ref-box strong{color:var(--primary);display:block;margin-bottom:3px;font-size:1em}
+.ref-box ul{margin:0;padding-left:14px}
+.ref-box li{margin-bottom:0}
+
+.case-box{background:var(--case);border-left:4px solid var(--caseb);padding:8px 12px;border-radius:0 6px 6px 0;font-size:.78em;color:var(--text);margin:8px 0;line-height:1.4}
+.case-box strong{color:#b8860b;display:block;margin-bottom:3px}
+body.dark .case-box strong{color:#f0c040}
+
+.page{opacity:0;pointer-events:none}
+.flipped{transform:rotateY(-180deg);opacity:0;pointer-events:none}
+.page.active{z-index:10;opacity:1;pointer-events:auto}
+.next-page{z-index:9}
+
+.controls{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:100}
+button{background:var(--page);border:2px solid #dcdde1;padding:8px 18px;font-size:.85em;cursor:pointer;border-radius:30px;box-shadow:0 4px 8px rgba(0,0,0,.2);transition:all .2s;font-weight:600;color:var(--text)}
+body.dark button{border-color:#30363d;box-shadow:0 4px 8px rgba(0,0,0,.6)}
+button:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+body.dark button:hover{color:#0d1117}
+button:disabled{opacity:.4;cursor:not-allowed}
+
+.page-number{position:absolute;bottom:10px;right:26px;color:#7f8fa6;font-size:.75em;font-weight:700}
+.page.cover .page-number{color:#b2bec3}
+
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px;margin-top:8px;overflow-y:auto;max-height:560px}
+.toc-grid button{background:var(--sim);padding:7px 10px;border-radius:6px;border:none;border-left:4px solid var(--primary);font-weight:500;text-align:left;box-shadow:none;font-size:.76em;cursor:pointer;transition:background .2s,transform .1s;color:var(--text)}
+.toc-grid button:hover{background:var(--primary);transform:translateX(3px);color:#fff}
+body.dark .toc-grid button:hover{color:#0d1117}
+
+.icon{width:14px;height:14px;vertical-align:middle}
+.icon-shield{fill:var(--blue)}
+.icon-sword{fill:var(--red)}
+
+@page{size:A4;margin:1.3cm}
+@media print{
+  body{display:block;background:#fff;overflow:visible;height:auto}
+  body.dark{background:#fff;--page:#fff;--text:#2f3640;--sim:#f1f2f6;--simbox:#f4f4f4;--simtx:#222;--codebg:#f8f9fa;--codetx:#333}
+  .book-container{width:100%;height:auto;max-height:none;perspective:none;box-shadow:none}
+  .page{position:relative;width:100%;height:auto;min-height:0;page-break-after:always;transform:none!important;opacity:1!important;box-shadow:none;border-radius:0;display:block!important;padding:0;overflow:visible;background-image:none}
+  .controls,.toc-grid button:hover{display:none}
+  .page.cover{color:#2c3e50;background:#fff!important;border:2px solid #ccc;min-height:90vh;display:flex;flex-direction:column}
+  .page.cover h1{text-shadow:none;color:#2c3e50}
+  .page.cover h2,.page.cover .author{color:#2c3e50}
+  .cover-meta{color:#555;border-color:#ccc}
+  .cover-warning{background:#fff8e1;border-color:#f0c040;color:#6b5900}
+  .cover-warning strong{color:#b8860b}
+  .page.cover .cover-warning p{color:#6b5900}
+  .page-header{display:block}
+  .page img{height:170px;box-shadow:none;opacity:1!important}
+  pre{border-color:#ccc;white-space:pre-wrap;word-wrap:break-word;font-size:.7em}
+  .metrics-box,.sim-box,.ref-box,.case-box,.legal-notice{page-break-inside:avoid}
+}
+@media (max-width:768px){
+  body{overflow:auto;align-items:flex-start;padding:8px}
+  .book-container{height:auto;max-height:none;perspective:none;width:100%}
+  .page{position:relative;padding:18px 14px 36px;transform:none!important;display:none;background-image:none}
+  .page.active{display:flex;opacity:1}
+  .page.flipped{display:none;opacity:0}
+  .team-grid{grid-template-columns:1fr}
+  .toc-grid{grid-template-columns:1fr;max-height:none}
+  .page.cover h1{font-size:1.9em}
+  .media-wrap{height:160px}
+}
+</style>
+</head>
+<body>
+
+<div class="book-container" id="book">
+
+<div class="page cover active" id="page-0">
+  <div class="cover-meta">Educational &amp; Concept Analysis Book</div>
+  <h1>BIOMIMICRY IN<br>CYBERSECURITY</h1>
+  <h2>Defence and Attack Strategies Inspired by Nature</h2>
+  <div class="cover-divider"></div>
+  <div class="author">Author: Ç. MALKOÇ</div>
+  <div class="cover-warning">
+    <strong>⚠️ LEGAL NOTICE AND ETHICS STATEMENT</strong>
+    <p>This book is for <em>education and concept analysis</em>. All technical methods in it are described <strong>at an abstract level</strong>; it contains no operational attack instructions.</p>
+    <p>The <strong>Red Team</strong> sections must only be used under <em>written permission (Rules of Engagement)</em>, in authorised test environments and for defensive purposes.</p>
+    <p>Use must comply with the law in force: <code>Turkish Penal Code Art. 243–245</code> (computer crimes), <code>KVKK</code> (Turkish personal-data law), <code>GDPR</code> (EU), <code>NIS2</code> (critical infrastructure).</p>
+    <p>The author cannot be held responsible for consequences arising from misuse of this information.</p>
+  </div>
+  <span class="page-number">Cover</span>
+</div>
+
+<div class="page next-page" id="page-1">
+  <div class="page-header">Contents</div>
+  <h3>Contents</h3>
+  <p>Each chapter has two parts: a <strong>conceptual explanation</strong> and an <strong>engineering-level technical deep dive</strong>. Difficulty: <span class="difficulty diff-beginner">🟢 Beginner</span> <span class="difficulty diff-intermediate">🟡 Intermediate</span> <span class="difficulty diff-advanced">🔴 Advanced</span></p>
+  <div class="toc-grid">
+    <button onclick="goToPage(2)"><strong>1.1:</strong> Octopus — Edge Computing</button>
+    <button onclick="goToPage(3)"><strong>1.2:</strong> Edge IDS (Deep Dive)</button>
+    <button onclick="goToPage(4)"><strong>2.1:</strong> Slime Mould — Routing</button>
+    <button onclick="goToPage(5)"><strong>2.2:</strong> OSPF/BGP (Deep Dive)</button>
+    <button onclick="goToPage(6)"><strong>3.1:</strong> Tardigrade — Resilience</button>
+    <button onclick="goToPage(7)"><strong>3.2:</strong> WORM Backup (Deep Dive)</button>
+    <button onclick="goToPage(8)"><strong>4.1:</strong> Mycorrhiza — Federated CTI</button>
+    <button onclick="goToPage(9)"><strong>4.2:</strong> STIX/TAXII (Deep Dive)</button>
+    <button onclick="goToPage(10)"><strong>5.1:</strong> CRISPR — Runtime Defence</button>
+    <button onclick="goToPage(11)"><strong>5.2:</strong> eBPF LSM (Deep Dive)</button>
+    <button onclick="goToPage(12)"><strong>6.1:</strong> Weaver Bird — AES</button>
+    <button onclick="goToPage(13)"><strong>6.2:</strong> AES-GCM (Deep Dive)</button>
+    <button onclick="goToPage(14)"><strong>7.1:</strong> Beaver — Zero Trust</button>
+    <button onclick="goToPage(15)"><strong>7.2:</strong> K8s NetworkPolicy (Deep Dive)</button>
+    <button onclick="goToPage(16)"><strong>8.1:</strong> Poison Frog — Canary</button>
+    <button onclick="goToPage(17)"><strong>8.2:</strong> CanaryToken (Deep Dive)</button>
+    <button onclick="goToPage(18)"><strong>9.1:</strong> Beehive — XDR</button>
+    <button onclick="goToPage(19)"><strong>9.2:</strong> SOAR Orchestration (Deep Dive)</button>
+    <button onclick="goToPage(20)"><strong>10.1:</strong> Bat — Deception</button>
+    <button onclick="goToPage(21)"><strong>10.2:</strong> Network Sonar (Deep Dive)</button>
+    <button onclick="goToPage(22)"><strong>11.1:</strong> Snake Skin — Rotation</button>
+    <button onclick="goToPage(23)"><strong>11.2:</strong> Vault TTL (Deep Dive)</button>
+    <button onclick="goToPage(24)"><strong>12.1:</strong> Apoptosis — Zeroize</button>
+    <button onclick="goToPage(25)"><strong>12.2:</strong> FIPS 140-3 (Deep Dive)</button>
+    <button onclick="goToPage(26)"><strong>13.1:</strong> Coral Reef — DDoS</button>
+    <button onclick="goToPage(27)"><strong>13.2:</strong> BGP RTBH (Deep Dive)</button>
+    <button onclick="goToPage(28)"><strong>14.1:</strong> Butterflyfish — Tarpit</button>
+    <button onclick="goToPage(29)"><strong>14.2:</strong> Endlessh &amp; SPA (Deep Dive)</button>
+    <button onclick="goToPage(30)"><strong>15.1:</strong> Moth — Jitter</button>
+    <button onclick="goToPage(31)"><strong>15.2:</strong> Traffic Obfuscation (Deep Dive)</button>
+    <button onclick="goToPage(32)"><strong>Appendix:</strong> Image Credits</button>
+  </div>
+  <span class="page-number">1</span>
+</div>
+
+<div class="page" id="page-2">
+  <div class="page-header">Chapter 1 — Edge Computing (Concept)</div>
+  <h3><span class="badge">1.1</span> The Octopus and Edge Computing <span class="difficulty diff-beginner">🟢 Beginner</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Octopus2.jpg?width=960" alt="Common octopus (Octopus vulgaris)" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🐙</div><div class="label">Octopus</div><div class="sub">Octopus vulgaris</div></div>
+  </div>
+  <div class="img-caption">Common octopus (Octopus vulgaris) — Photo: albert kok · <a href="https://commons.wikimedia.org/wiki/File:Octopus2.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span>About two thirds of an octopus's neurons sit in its arms. Each arm can examine an object and take reflex decisions on its own, without signalling the central brain.</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li>Autonomous IDS/IPS on edge nodes.</li><li>Local isolation even if the cloud link drops.</li><li>Avoiding a single point of failure with a distributed design.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Physical access to the edge device itself (UART/JTAG).</li><li>Turning an edge device into a zombie that sends false data.</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Case: Mirai Botnet (2016)</strong>More than 600,000 IoT devices with weak default passwords were taken over and used for a huge DDoS attack on Dyn DNS.</div>
+  <span class="page-number">2</span>
+</div>
+<div class="page" id="page-3">
+  <div class="page-header">Chapter 1 — Edge Computing (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ The code here must only be run in authorised test environments (RoE).</div>
+  <h3><span class="badge">1.2</span> Technical Analysis: Edge IDS &amp; Fail-Close <span class="difficulty diff-advanced">🔴 Advanced</span></h3>
+  <p>Autonomous decisions on edge devices are local filtering rules that follow the <strong>fail-close</strong> principle.</p>
+  <div class="tech-box"><span class="tech-title">Architecture: K3s + Cilium eBPF</span>Low-footprint <code>K3s</code> is used. Local threats are blocked at kernel level by <code>Cilium</code> eBPF agents.</div>
+<pre><code><span class="comment"># Cilium eBPF Edge Network Policy</span>
+<span class="keyword">apiVersion</span>: cilium.io/v2
+<span class="keyword">kind</span>: CiliumNetworkPolicy
+<span class="keyword">metadata</span>:
+  <span class="keyword">name</span>: <span class="string">"edge-autonomous-isolation"</span>
+<span class="keyword">spec</span>:
+  <span class="keyword">endpointSelector</span>:
+    <span class="keyword">matchLabels</span>:
+      <span class="keyword">k8s:role</span>: <span class="string">"iot-sensor"</span>
+  <span class="keyword">egress</span>:
+  - <span class="keyword">toEndpoints</span>:
+    - <span class="keyword">matchLabels</span>:
+        <span class="keyword">k8s:app</span>: <span class="string">"mqtt-broker"</span>
+    <span class="keyword">toPorts</span>:
+    - <span class="keyword">ports</span>:
+      - <span class="keyword">port</span>: <span class="string">"8883"</span>
+        <span class="keyword">protocol</span>: <span class="string">"TCP"</span></code></pre>
+  <div class="sim-box"><strong>⚙ Red Team (UART Exploitation)</strong><ol><li>Physical access: <code>screen /dev/ttyUSB0 115200</code></li><li>Kernel argument: <code>setenv bootargs 'init=/bin/sh'</code></li><li><strong>Blue Team:</strong> A locked bootloader with Secure/Verified Boot refuses unsigned boot; TPM measured boot proves the change; UART/JTAG is disabled in production.</li></ol></div>
+  <div class="metrics-box"><div><strong>Local</strong>Decision point</div><div><strong>ms range</strong>In-kernel filtering (target)</div><div><strong>No SPOF</strong>Distributed</div></div>
+  <div class="ref-box"><strong>📖 References</strong><ul><li>NIST SP 800-207 (2020)</li><li>NIST SP 800-183 (2016)</li><li>AWS Greengrass v2 Security WP (2023)</li></ul></div>
+  <span class="page-number">3</span>
+</div>
+<div class="page" id="page-4">
+  <div class="page-header">Chapter 2 — Dynamic Routing (Concept)</div>
+  <h3><span class="badge">2.1</span> The Slime Mould and Routing <span class="difficulty diff-beginner">🟢 Beginner</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Physarum_polycephalum_plasmodium.jpg?width=960" alt="Slime mould plasmodium (Physarum polycephalum)" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🟡</div><div class="label">Slime Mould</div><div class="sub">Physarum polycephalum</div></div>
+  </div>
+  <div class="img-caption">Slime mould plasmodium (Physarum polycephalum) — Photo: frankenstoen · CC BY 2.5 · <a href="https://commons.wikimedia.org/wiki/File:Physarum_polycephalum_plasmodium.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span><em>Physarum polycephalum</em> finds the most efficient path between food sources by itself; it lets dead-end tubes wither and thickens the useful ones.</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li>Topology adaptation through LSA packets.</li><li>Automatic failover.</li><li>Blocking forged routes with BGP ROAs.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Pulling traffic with BGP hijacking.</li><li>Corrupting the topology with forged Hello/LSA packets.</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Case: Pakistan Telecom BGP Hijack (2008)</strong>A route announcement that Pakistan Telecom made to block YouTube inside the country leaked to the world by mistake; YouTube was unreachable globally for about two hours.</div>
+  <span class="page-number">4</span>
+</div>
+<div class="page" id="page-5">
+  <div class="page-header">Chapter 2 — Dynamic Routing (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ Forged LSA packets must only be generated in isolated lab networks.</div>
+  <h3><span class="badge">2.2</span> BGP RPKI &amp; OSPF Authentication <span class="difficulty diff-advanced">🔴 Advanced</span></h3>
+  <p>To stop forged announcements, routes must be validated with <strong>RPKI</strong> (BGP ROV) and OSPF messages must be authenticated with <strong>HMAC-SHA-256</strong>. (Syntax varies by platform and release.)</p>
+<pre><code><span class="comment">! Cisco IOS-XE: BGP origin validation (ROV) — RFC 6811 / RFC 8210</span>
+<span class="keyword">router bgp</span> 65000
+ <span class="comment">! RTR session to the RPKI validator (port depends on the validator)</span>
+ <span class="keyword">bgp rpki</span> server tcp 192.168.1.100 port 323 refresh 600
+ <span class="keyword">neighbor</span> 203.0.113.1 remote-as 64500
+ <span class="keyword">address-family</span> ipv4 unicast
+  <span class="keyword">neighbor</span> 203.0.113.1 route-map RPKI_FILTER in
+!
+<span class="keyword">route-map</span> RPKI_FILTER deny 10
+ <span class="keyword">match rpki</span> invalid
+<span class="keyword">route-map</span> RPKI_FILTER permit 20
+!
+<span class="comment">! OSPFv2 HMAC-SHA-256 authentication (RFC 5709)</span>
+<span class="keyword">key chain</span> OSPF_KC
+ <span class="keyword">key</span> 1
+  <span class="keyword">key-string</span> SECURE_KEY
+  <span class="keyword">cryptographic-algorithm</span> hmac-sha-256
+<span class="keyword">interface</span> GigabitEthernet0/0
+ <span class="keyword">ip ospf authentication</span> key-chain OSPF_KC</code></pre>
+  <div class="sim-box"><strong>⚙ Red Team (OSPF Poisoning with Scapy)</strong><code>from scapy.contrib.ospf import OSPF_Hdr, OSPF_LSUpd, OSPF_Router_LSA</code><br><code>pkt = IP(dst="224.0.0.5", proto=89)/OSPF_Hdr(src="10.0.0.1")/OSPF_LSUpd(lsalist=[OSPF_Router_LSA(linkcount=1)])</code><br><em>* With HMAC-SHA-256 enabled, the forged LSA fails authentication and the neighbouring router drops it.</em></div>
+  
+  <div class="ref-box"><strong>📖 References</strong><ul><li>RFC 2328 — OSPFv2</li><li>RFC 4271 — BGP-4</li><li>RFC 6480 — RPKI</li><li>RFC 5709 — OSPFv2 HMAC-SHA</li><li>RFC 6811 — BGP Prefix Origin Validation</li><li>RFC 8210 — RPKI-RTR v1 (updates RFC 6810)</li></ul></div>
+  <span class="page-number">5</span>
+</div>
+<div class="page" id="page-6">
+  <div class="page-header">Chapter 3 — Disaster Recovery (Concept)</div>
+  <h3><span class="badge">3.1</span> The Tardigrade and Cryptobiosis <span class="difficulty diff-beginner">🟢 Beginner</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/SEM_image_of_Milnesium_tardigradum_in_active_state_-_journal.pone.0045682.g001-2.png?width=960" alt="Tardigrade, SEM (Milnesium tardigradum)" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🐻</div><div class="label">Tardigrade</div><div class="sub">SEM image</div></div>
+  </div>
+  <div class="img-caption">Tardigrade, SEM (Milnesium tardigradum) — Photo: Schokraie et al. (2012), PLoS ONE · CC BY · <a href="https://commons.wikimedia.org/wiki/File:SEM_image_of_Milnesium_tardigradum_in_active_state_-_journal.pone.0045682.g001-2.png" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span>Under drying, freezing, vacuum or heavy radiation, tardigrades almost stop their metabolism and enter cryptobiosis; against drying they curl into the shrunken “tun” form. When conditions improve they become active again.</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li>Air-gapped offline backups.</li><li>Immutable WORM storage.</li><li>Graceful-degradation modes.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Targeting the backup catalogue.</li><li>Filling the disks through storage exhaustion.</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Case: Kaseya VSA (2021)</strong>REvil encrypted up to 1,500 businesses through the Kaseya VSA management software. Lesson: an immutable backup is the precondition for recovering without paying a ransom.</div>
+  <span class="page-number">6</span>
+</div>
+<div class="page" id="page-7">
+  <div class="page-header">Chapter 3 — Disaster Recovery (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ VSS commands can cause data loss on critical production systems.</div>
+  <h3><span class="badge">3.2</span> S3 Object Lock &amp; WORM <span class="difficulty diff-intermediate">🟡 Intermediate</span></h3>
+  <p>In the cloud, immutability is enforced with <strong>AWS S3 Object Lock (Compliance mode)</strong>. Object Lock requires versioning; enabling it when the bucket is created is recommended (since November 2023 AWS also allows enabling it on existing buckets).</p>
+<pre><code><span class="comment"># 1. Create the bucket (Object Lock enabled)</span>
+<span class="func">aws</span> s3api create-bucket --bucket company-critical-backup \
+    --object-lock-enabled-for-bucket
+
+<span class="comment"># 2. Upload an object + 10-year retention (legal retention)</span>
+<span class="func">aws</span> s3api put-object \
+    --bucket company-critical-backup \
+    --key db_backup_2026.bak \
+    --body local_file.bak \
+    --object-lock-mode COMPLIANCE \
+    --object-lock-retain-until-date <span class="string">"2036-10-07T00:00:00Z"</span>
+<span class="comment"># Until the date passes, nobody (root included) can delete the locked version.
+# An overwrite only creates a new version; the locked version is kept.</span></code></pre>
+  <div class="sim-box"><strong>⚙ Red Team (Targeting VSS)</strong><ol><li>Unable to touch S3, the attacker goes for local shadow copies: <code>vssadmin delete shadows /all /quiet</code></li><li><strong>Blue Team:</strong> Recovers within the RTO from immutable hypervisor snapshots.</li></ol></div>
+  <div class="metrics-box"><div><strong>&lt;15 min</strong>RTO (example target)</div><div><strong>&lt;1 hour</strong>RPO (example target)</div><div><strong>COMPLIANCE</strong>Mode</div><div><strong>10 years</strong>Retention</div></div>
+  <div class="ref-box"><strong>📖 References</strong><ul><li>NIST SP 800-209</li><li>NIST SP 800-88 Rev.1</li><li>CISA #StopRansomware (2023)</li></ul></div>
+  <span class="page-number">7</span>
+</div>
+<div class="page" id="page-8">
+  <div class="page-header">Chapter 4 — Threat Intelligence (Concept)</div>
+  <h3><span class="badge">4.1</span> Mycorrhiza and Federated CTI <span class="difficulty diff-beginner">🟢 Beginner</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Mycorhizes-01.jpg?width=960" alt="Ectomycorrhizal mycelium on roots (Picea glauca)" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🌳</div><div class="label">Mycorrhizal Network</div><div class="sub">Wood Wide Web</div></div>
+  </div>
+  <div class="img-caption">Ectomycorrhizal mycelium on roots (Picea glauca) — Photo: André-Ph. · <a href="https://commons.wikimedia.org/wiki/File:Mycorhizes-01.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span>Plant roots can be linked through fungal mycelium (a common mycorrhizal network). Greenhouse and laboratory experiments show that a plant under pest attack can trigger a defence response in its neighbours through this network; how far this happens in real forests is still debated.</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li>IoC sharing with STIX/TAXII.</li><li>MISP integration.</li><li>Collective immunity.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Poisoning the trust graph with false IoCs.</li><li>Reporting legitimate IPs as malicious (self-DoS).</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Case: SolarWinds (2020)</strong>The trojanised Orion update reached about 18,000 customers and the attack went unnoticed for months. After FireEye disclosed it in December 2020, the shared IoCs let other organisations sweep their own networks within days.</div>
+  <span class="page-number">8</span>
+</div>
+<div class="page" id="page-9">
+  <div class="page-header">Chapter 4 — Threat Intelligence (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ Deliberately uploading false data to intelligence platforms carries legal liability.</div>
+  <h3><span class="badge">4.2</span> STIX 2.1 and MISP <span class="difficulty diff-advanced">🔴 Advanced</span></h3>
+  <p>In cybersecurity the chemical signal is standardised as the <strong>STIX 2.1</strong> format and the <strong>TAXII 2.1</strong> transport protocol.</p>
+<pre><code><span class="comment"># Example STIX 2.1 Indicator</span>
+{
+  <span class="keyword">"type"</span>: <span class="string">"indicator"</span>,
+  <span class="keyword">"spec_version"</span>: <span class="string">"2.1"</span>,
+  <span class="keyword">"id"</span>: <span class="string">"indicator--8e2e2d2b-17d4-4cbf-938f-98ee46b3cd3f"</span>,
+  <span class="keyword">"created"</span>: <span class="string">"2026-10-07T10:00:00Z"</span>,
+  <span class="keyword">"modified"</span>: <span class="string">"2026-10-07T10:00:00Z"</span>,
+  <span class="keyword">"name"</span>: <span class="string">"Malicious C2 IP"</span>,
+  <span class="keyword">"pattern_type"</span>: <span class="string">"stix"</span>,
+  <span class="keyword">"pattern"</span>: <span class="string">"[ipv4-addr:value = '198.51.100.1']"</span>,
+  <span class="keyword">"valid_from"</span>: <span class="string">"2026-10-07T10:00:00Z"</span>,
+  <span class="keyword">"confidence"</span>: 85
+}
+<span class="comment"># Pushed automatically to firewall EDLs through the MISP API</span></code></pre>
+  <div class="sim-box"><strong>⚙ Red Team (Trust Poisoning)</strong><ol><li>The MISP account of a low-profile organisation in the supply chain is taken over.</li><li>Office 365 ASNs are marked as malicious.</li><li><strong>Blue Team:</strong> IoCs with a low confidence score (e.g. &lt;60) or a single source are not blocked automatically; analyst approval and an allowlist are required.</li></ol></div>
+  <div class="metrics-box"><div><strong>s–min</strong>IoC propagation (target)</div><div><strong>Confidence threshold</strong>FP filter</div><div><strong>STIX 2.1</strong>Format</div></div>
+  <div class="ref-box"><strong>📖 References</strong><ul><li>OASIS STIX 2.1 (2021)</li><li>OASIS TAXII 2.1 (2021)</li><li>MITRE ATT&amp;CK v14</li><li>ENISA Threat Landscape 2024</li></ul></div>
+  <span class="page-number">9</span>
+</div>
+<div class="page" id="page-10">
+  <div class="page-header">Chapter 5 — Runtime Defence (Concept)</div>
+  <h3><span class="badge">5.1</span> Bacterial Immunity (CRISPR) <span class="difficulty diff-intermediate">🟡 Intermediate</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Phage.jpg?width=960" alt="Bacteriophages attached to a bacterial cell wall (TEM)" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🦠</div><div class="label">Bacteriophage T4</div><div class="sub">Electron microscope</div></div>
+  </div>
+  <div class="img-caption">Bacteriophages attached to a bacterial cell wall (TEM) — Photo: Graham Beards · <a href="https://commons.wikimedia.org/wiki/File:Phage.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span>Bacteriophages inject DNA into bacteria. The bacterium stores DNA fragments from earlier attacks in its CRISPR array as a “memory”; when the same phage returns, Cas enzymes use that record as a guide and cut the invading DNA. <em>Roles:</em> the phage attacks, the bacterium defends.</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li>Zero-downtime in-memory patching.</li><li>eBPF LSM / API hooks.</li><li>Blocking exploits at runtime.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Dropping into kernel space to switch the defence off.</li><li>Weaponising legitimate code with ROP chains.</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Case: Log4Shell (CVE-2021-44228)</strong>It affected a very large base of Java software (CVSS 10.0). Until patches spread, runtime measures (WAF, RASP, virtual patching) became critical.</div>
+  <span class="page-number">10</span>
+</div>
+<div class="page" id="page-11">
+  <div class="page-header">Chapter 5 — Runtime Defence (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ BPF LSM programs run in the kernel; do not put them in production untested.</div>
+  <h3><span class="badge">5.2</span> Blocking Execution with eBPF LSM <span class="difficulty diff-advanced">🔴 Advanced</span></h3>
+  <p>The closest counterpart of the CRISPR-Cas scissors is not a read-only kprobe but a <strong>BPF LSM (Linux Security Module)</strong> hook. With the <code>bprm_check_security</code> hook an <code>execve()</code> call can really be denied (<code>-EPERM</code>). It needs Linux 5.7+, <code>CONFIG_BPF_LSM</code> and the <code>lsm=…,bpf</code> boot parameter.</p>
+<pre><code><span class="comment">/* eBPF LSM: denies a suspicious exec inside the kernel (skeleton) */</span>
+<span class="keyword">#include</span> <span class="string">"vmlinux.h"</span>
+<span class="keyword">#include</span> <span class="string">&lt;bpf/bpf_helpers.h&gt;</span>
+<span class="keyword">#include</span> <span class="string">&lt;bpf/bpf_tracing.h&gt;</span>
+<span class="keyword">#define</span> EPERM 1
+
+<span class="keyword">SEC</span>(<span class="string">"lsm/bprm_check_security"</span>)
+<span class="keyword">int</span> <span class="func">BPF_PROG</span>(check_exec, <span class="keyword">struct</span> linux_binprm *bprm, <span class="keyword">int</span> ret) {
+    <span class="keyword">char</span> buf[128];
+    <span class="keyword">if</span> (ret) <span class="keyword">return</span> ret;          <span class="comment">/* keep the earlier LSM verdict */</span>
+    <span class="func">bpf_probe_read_kernel_str</span>(buf, <span class="keyword">sizeof</span>(buf), bprm-&gt;filename);
+
+    <span class="keyword">if</span> (<span class="func">is_denied</span>(buf)) {         <span class="comment">/* placeholder: policy lookup in a BPF map */</span>
+        <span class="func">bpf_printk</span>(<span class="string">"CRISPR: exec denied: %s"</span>, buf);
+        <span class="keyword">return</span> -EPERM;
+    }
+    <span class="keyword">return</span> 0;
+}
+<span class="keyword">char</span> LICENSE[] <span class="keyword">SEC</span>(<span class="string">"license"</span>) = <span class="string">"GPL"</span>;</code></pre>
+  <div class="sim-box"><strong>⚙ Red Team (Buffer Overflow)</strong><ol><li>The attacker gets RCE and calls <code>execve("/bin/sh")</code>.</li><li>The LSM hook fires inside the kernel; <code>-EPERM</code> is returned and the request is denied before the new program is loaded.</li><li>The service keeps running without a restart; the underlying vulnerability must still be patched.</li></ol></div>
+  
+  <div class="ref-box"><strong>📖 References</strong><ul><li>NIST SP 800-53 SI-2</li><li>CVE-2021-44228</li><li>eBPF.io Documentation</li><li>Linux Kernel bprm_check_security</li></ul></div>
+  <span class="page-number">11</span>
+</div>
+<div class="page" id="page-12">
+  <div class="page-header">Chapter 6 — Cryptography (Concept)</div>
+  <h3><span class="badge">6.1</span> The Weaver Bird and AES <span class="difficulty diff-beginner">🟢 Beginner</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Black-headed_weaver_%28Ploceus_cucullatus_bohndorffi%29_male_nest_building.jpg?width=960" alt="Weaver bird building its nest (Ploceus cucullatus)" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🐦</div><div class="label">Weaver Bird</div><div class="sub">Ploceus cucullatus</div></div>
+  </div>
+  <div class="img-caption">Weaver bird building its nest (Ploceus cucullatus) — Photo: Charles J. Sharp · <a href="https://commons.wikimedia.org/wiki/File:Black-headed_weaver_%28Ploceus_cucullatus_bohndorffi%29_male_nest_building.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span>Weaver birds build their nests with complex reverse-looped knots. If a predator pulls one blade of grass the nest does not unravel; the tension spreads and the knots tighten.</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li>Breaking statistical analysis with AES-256.</li><li>Destroying patterns through the avalanche effect.</li><li>Unique IV/nonce; salt + KDF for passwords.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Side-channel attacks.</li><li>Brute-forcing low-entropy passwords.</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Case: GCM Nonce Reuse in TLS (2016)</strong>Böck et al. found HTTPS servers on the internet that reused nonces. Nonce reuse (the “forbidden attack”) exposes the authentication key and allows forged messages; the AES key itself is not exposed.</div>
+  <span class="page-number">12</span>
+</div>
+<div class="page" id="page-13">
+  <div class="page-header">Chapter 6 — Cryptography (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ Cryptographic keys must not be stored statically in code.</div>
+  <h3><span class="badge">6.2</span> AES-GCM and the Avalanche Effect <span class="difficulty diff-intermediate">🟡 Intermediate</span></h3>
+  <p>The AES block cipher alone gives only confidentiality. For integrity, <strong>GCM</strong> produces an authentication tag. The same key+nonce pair must never be used twice.</p>
+<pre><code><span class="comment"># Python AES-GCM (cryptography library)</span>
+<span class="keyword">from</span> cryptography.hazmat.primitives.ciphers.aead <span class="keyword">import</span> AESGCM
+<span class="keyword">import</span> os
+
+<span class="keyword">key</span> = AESGCM.generate_key(<span class="keyword">bit_length</span>=256)
+<span class="keyword">aesgcm</span> = AESGCM(key)
+<span class="keyword">nonce</span> = os.urandom(12)  <span class="comment"># 96-bit; NEW for EVERY message</span>
+
+<span class="keyword">data</span> = <span class="string">b"Secret_Data_1"</span>
+<span class="keyword">ciphertext</span> = aesgcm.encrypt(nonce, data, <span class="keyword">None</span>)
+<span class="comment"># Output = ciphertext + 16-byte auth tag</span>
+
+<span class="keyword">plaintext</span> = aesgcm.decrypt(nonce, ciphertext, <span class="keyword">None</span>)</code></pre>
+  <div class="sim-box"><strong>⚙ Avalanche Effect — AES block level</strong>Block 1: <code>"Vault_Passwd:000"</code><br>Block 2: <code>"Vault_Passwd:001"</code> (one bit differs)<br><em>* When a single AES block is encrypted with the same key, about 50% of the output bits change on average.</em><br><em>* Note: GCM is counter (CTR) based; with the same nonce a one-bit difference changes only that bit of the output. That is why the nonce must be unique per message; integrity comes from the tag.</em></div>
+  <div class="metrics-box"><div><strong>256-bit</strong>Key</div><div><strong>GCM</strong>AEAD</div><div><strong>96-bit</strong>Nonce</div><div><strong>~50%</strong>Avalanche (block)</div></div>
+  <div class="ref-box"><strong>📖 References</strong><ul><li>FIPS 197</li><li>NIST SP 800-38D</li><li>RFC 5288</li><li>Shannon (1949)</li><li>Böck et al. (2016) — Nonce-Disrespecting Adversaries</li></ul></div>
+  <span class="page-number">13</span>
+</div>
+<div class="page" id="page-14">
+  <div class="page-header">Chapter 7 — Network Segmentation (Concept)</div>
+  <h3><span class="badge">7.1</span> Beaver Dams and Zero Trust <span class="difficulty diff-beginner">🟢 Beginner</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Beaver_dam_J%C3%A4mtland.JPG?width=960" alt="Beaver dam, Jämtland (Sweden)" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🦫</div><div class="label">Beaver Dam</div><div class="sub">Castoridae</div></div>
+  </div>
+  <div class="img-caption">Beaver dam, Jämtland (Sweden) — Photo: Lars Falkdalen Lindahl · <a href="https://commons.wikimedia.org/wiki/File:Beaver_dam_J%C3%A4mtland.JPG" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span>Beavers dam a stream to create a deep pond, which keeps the lodge entrance under water. Land predators cannot reach the lodge; the only way in is the controlled underwater passage.</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li>Segmentation with VLAN/subnet/NetworkPolicy.</li><li>“Never trust, always verify” + least privilege.</li><li>Shrinking the room for lateral movement.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Stealing a Domain Admin identity and passing with its rights.</li><li>Hunting for any-any misconfigurations.</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Case: Target POS (2013)</strong>The attackers entered with a supplier's credentials; because segmentation was missing, 40 million card records were stolen.</div>
+  <span class="page-number">14</span>
+</div>
+<div class="page" id="page-15">
+  <div class="page-header">Chapter 7 — Network Segmentation (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ Micro-segmentation deployed without testing will interrupt legitimate services.</div>
+  <h3><span class="badge">7.2</span> K8s NetworkPolicy <span class="difficulty diff-intermediate">🟡 Intermediate</span></h3>
+  <p>In Kubernetes, traffic between pods is <em>allowed</em> by default. For Zero Trust a <code>default-deny</code> policy is applied first, then only the required flows are allowed. A CNI that enforces NetworkPolicy (Calico, Cilium, etc.) is required.</p>
+<pre><code><span class="comment"># 1) Namespace-wide default deny (the dam)</span>
+<span class="keyword">apiVersion</span>: networking.k8s.io/v1
+<span class="keyword">kind</span>: NetworkPolicy
+<span class="keyword">metadata</span>: {name: default-deny-all, namespace: finance}
+<span class="keyword">spec</span>:
+  <span class="keyword">podSelector</span>: {}
+  <span class="keyword">policyTypes</span>: [Ingress, Egress]
+---
+<span class="comment"># 2) The only allowed passage: payment-backend → postgresql:5432</span>
+<span class="keyword">apiVersion</span>: networking.k8s.io/v1
+<span class="keyword">kind</span>: NetworkPolicy
+<span class="keyword">metadata</span>:
+  <span class="keyword">name</span>: <span class="string">"db-isolation-policy"</span>
+  <span class="keyword">namespace</span>: <span class="string">"finance"</span>
+<span class="keyword">spec</span>:
+  <span class="keyword">podSelector</span>:
+    <span class="keyword">matchLabels</span>:
+      <span class="keyword">app</span>: <span class="string">"postgresql"</span>
+  <span class="keyword">policyTypes</span>: [Ingress]
+  <span class="keyword">ingress</span>:
+  - <span class="keyword">from</span>:
+    - <span class="keyword">podSelector</span>:
+        <span class="keyword">matchLabels</span>:
+          <span class="keyword">app</span>: <span class="string">"payment-backend"</span>
+    <span class="keyword">ports</span>:
+    - <span class="keyword">protocol</span>: TCP
+      <span class="keyword">port</span>: 5432</code></pre>
+  <div class="sim-box"><strong>⚙ Red Team (Lateral Movement)</strong><ol><li>The attacker gets RCE in the web frontend pod.</li><li>Runs an Nmap scan against the DB pod.</li><li><strong>Blue Team:</strong> Because of the NetworkPolicy, frontend→DB packets are dropped.</li></ol></div>
+  
+  <div class="ref-box"><strong>📖 References</strong><ul><li>NIST SP 800-207</li><li>CISA Zero Trust Maturity v2 (2023)</li><li>K8s NetworkPolicy API</li></ul></div>
+  <span class="page-number">15</span>
+</div>
+<div class="page" id="page-16">
+  <div class="page-header">Chapter 8 — Deception / Canary (Concept)</div>
+  <h3><span class="badge">8.1</span> The Poison Frog and Aposematism <span class="difficulty diff-beginner">🟢 Beginner</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Dendrobates-tinctorius-blauer-baumsteiger.jpg?width=960" alt="Blue poison dart frog (Dendrobates tinctorius “azureus”)" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🐸</div><div class="label">Poison Dart Frog</div><div class="sub">Dendrobates tinctorius “azureus”</div></div>
+  </div>
+  <div class="img-caption">Blue poison dart frog (Dendrobates tinctorius “azureus”) — Photo: Holger Krisp · <a href="https://commons.wikimedia.org/wiki/File:Dendrobates-tinctorius-blauer-baumsteiger.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span>Bright colours warn predators “I am poisonous” (aposematism): the animal advertises its danger instead of hiding. The cyber counterpart has two parts: a visible warning is <em>deterrence</em> (warning banners, visible monitoring); a honeytoken is the “poison” that gives away whoever touches it, and it is kept hidden.</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li>Fake SIEM API key, fake admin panel.</li><li>Very few false positives, because it has no legitimate use.</li><li>Automatic MAC/IP quarantine.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Becoming suspicious of honeytoken files.</li><li>Finding the real target with passive sniffing.</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Framework: MITRE Engage (2022)</strong>A framework for adversary engagement; it defines the goals Expose, Affect and Elicit.</div>
+  <span class="page-number">16</span>
+</div>
+<div class="page" id="page-17">
+  <div class="page-header">Chapter 8 — Deception / Canary (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ Canary tokens that are too obvious tell the attacker the system is watched.</div>
+  <h3><span class="badge">8.2</span> CanaryTokens &amp; DNS Tripwire <span class="difficulty diff-intermediate">🟡 Intermediate</span></h3>
+  <p>When a fake Word document or AWS API key is used, the token signals the Blue Team by producing a DNS/HTTP request or an API log record.</p>
+<pre><code><span class="comment"># Honeytoken: a VALID IAM key with no permissions at all
+# (the values below are AWS's documentation example)</span>
+<span class="keyword">export</span> AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+<span class="keyword">export</span> AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+<span class="func">aws</span> sts get-caller-identity   <span class="comment"># an attacker's typical first command</span>
+
+<span class="comment"># CloudTrail record in the account that owns the key:</span>
+{
+  <span class="keyword">"eventName"</span>: <span class="string">"GetCallerIdentity"</span>,
+  <span class="keyword">"userIdentity"</span>: {<span class="keyword">"userName"</span>: <span class="string">"canary-user"</span>},
+  <span class="keyword">"sourceIPAddress"</span>: <span class="string">"203.0.113.5"</span>
+}
+<span class="comment"># This user has no legitimate work: every record is an alert.
+# Note: a made-up (invalid) key leaves no trace in any account.</span></code></pre>
+  <div class="sim-box"><strong>⚙ Red Team (Tripping the Canary)</strong><ol><li>The attacker opens <code>Pass.docx</code> on an SMB share.</li><li>A remote-resource link in the document produces a DNS/HTTP request to a token-specific domain (e.g. <code>x8f9d.canarytokens.com</code>).</li><li>SOAR can quarantine the internal client that made the request shortly afterwards.</li></ol></div>
+  <div class="metrics-box"><div><strong>High</strong>Signal quality</div><div><strong>Very low</strong>False positives</div><div><strong>seconds</strong>Alert</div></div>
+  <div class="ref-box"><strong>📖 References</strong><ul><li>NIST SP 800-53 SC-26</li><li>MITRE Engage (2022)</li><li>Thinkst Canary Docs</li></ul></div>
+  <span class="page-number">17</span>
+</div>
+<div class="page" id="page-18">
+  <div class="page-header">Chapter 9 — Autonomous XDR (Concept)</div>
+  <h3><span class="badge">9.1</span> The Beehive and Pheromone Defence <span class="difficulty diff-beginner">🟢 Beginner</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Honeybee_thermal_defence01.jpg?width=960" alt="Japanese honeybees forming a “heat ball” around hornets" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🐝</div><div class="label">Japanese Honeybee</div><div class="sub">Heat ball</div></div>
+  </div>
+  <div class="img-caption">Japanese honeybees forming a “heat ball” around hornets — Photo: Takahashi · <a href="https://commons.wikimedia.org/wiki/File:Honeybee_thermal_defence01.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span>When a threat nears the hive, guard bees release alarm pheromone and alert the other workers. In the Japanese honeybee (<em>Apis cerana japonica</em>) hundreds of workers engulf a hornet and vibrate their flight muscles, raising the “heat ball” to about 46&nbsp;°C; the hornet dies, the bees survive.</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li>Merging EDR + network + cloud logs in XDR.</li><li>Orchestrating the alert across the network with SOAR playbooks.</li><li>Machine-speed defence without waiting for a human.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Creating fatigue with thousands of false alerts.</li><li>Triggering a self-DoS with fake pheromones.</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Case: Colonial Pipeline (2021)</strong>The attackers got in with the leaked password of an old VPN account that had no MFA. To stop the spread the company shut the pipeline for 5–6 days and paid about $4.4 million in ransom; the US East Coast saw fuel shortages.</div>
+  <span class="page-number">18</span>
+</div>
+<div class="page" id="page-19">
+  <div class="page-header">Chapter 9 — Autonomous XDR (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ Autonomous SOAR rules need exceptions so that they never isolate critical servers.</div>
+  <h3><span class="badge">9.2</span> SOAR and API Orchestration <span class="difficulty diff-advanced">🔴 Advanced</span></h3>
+  <p>The digital counterpart of pheromones is the <strong>REST API webhook</strong> calls that the XDR/SIEM engine makes to other security products.</p>
+<pre><code><span class="comment"># SOAR playbook (schematic; API addresses and cs_api are placeholders)</span>
+<span class="keyword">import</span> requests
+
+<span class="keyword">def</span> <span class="func">isolate_host</span>(ip, mac):
+    <span class="comment"># 1. Block the IP on the firewall EDL</span>
+    requests.post(<span class="string">"https://fw.local/api/block"</span>, json={<span class="string">"ip"</span>: ip}, verify=<span class="keyword">True</span>)
+    <span class="comment"># 2. NAC - shut the switch port</span>
+    requests.put(<span class="string">"https://ise.local/ers/mac/quarantine"</span>, json={<span class="string">"mac"</span>: mac})
+    <span class="comment"># 3. EDR - isolate the host</span>
+    cs_api.contain_host(ip)
+    <span class="keyword">print</span>(<span class="string">"Threat isolated."</span>)</code></pre>
+  <div class="sim-box"><strong>⚙ Red Team (Cobalt Strike)</strong><ol><li>A Cobalt Strike Beacon is loaded on a PC (fileless).</li><li>The EDR forwards the anomalous behaviour to XDR.</li><li>The SOAR script runs; the device is isolated from the network (NAC + EDR). Example scenario time: <strong>47 s</strong>.</li></ol></div>
+  <div class="metrics-box"><div><strong>&lt;60 s</strong>MTTD (target)</div><div><strong>&lt;5 min</strong>MTTR (target)</div><div><strong>70%</strong>Automation (example)</div></div>
+  <div class="ref-box"><strong>📖 References</strong><ul><li>NIST SP 800-61 Rev.3 (2025)</li><li>MITRE D3FEND</li><li>Gartner XDR (2023)</li></ul></div>
+  <span class="page-number">19</span>
+</div>
+<div class="page" id="page-20">
+  <div class="page-header">Chapter 10 — Deception &amp; Sonar (Concept)</div>
+  <h3><span class="badge">10.1</span> Bat Echolocation and Deception <span class="difficulty diff-beginner">🟢 Beginner</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Townsends_big-eared_bat_%286009182505%29.jpg?width=960" alt="Townsend's big-eared bat (Corynorhinus townsendii)" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🦇</div><div class="label">Bat</div><div class="sub">Corynorhinus townsendii</div></div>
+  </div>
+  <div class="img-caption">Townsend's big-eared bat (Corynorhinus townsendii) — Photo: Ann Froschauer / USFWS · <a href="https://commons.wikimedia.org/wiki/File:Townsends_big-eared_bat_%286009182505%29.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span>Bats emit high-frequency sound. By analysing the return time and strength of the echo they determine the position, speed and size of their prey with very high precision.</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li>Periodic SYN/HTTP sonar against honeypots.</li><li>An alert when the echo profile deviates.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Staying stealthy and producing no echo.</li><li>Misleading the sonar with spoofed TCP RSTs.</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Case: NotPetya (2017)</strong>The attackers had planted a backdoor in the update infrastructure of the M.E.Doc accounting software months earlier; the wiper triggered on 27 June 2017 spread worldwide within hours. Estimated damage: about $10 billion.</div>
+  <span class="page-number">20</span>
+</div>
+<div class="page" id="page-21">
+  <div class="page-header">Chapter 10 — Deception &amp; Sonar (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ Sending probe packets too often can flood the network with needless traffic.</div>
+  <h3><span class="badge">10.2</span> Probe and Echo Analysis <span class="difficulty diff-intermediate">🟡 Intermediate</span></h3>
+  <p>The sonar is automated with <strong>Scapy</strong>. The decoy service's response size and TTL values are recorded as a baseline.</p>
+<pre><code><span class="comment"># Network sonar with Scapy</span>
+<span class="keyword">from</span> scapy.all <span class="keyword">import</span> *
+
+ans, unans = sr(IP(dst=<span class="string">"10.0.0.99"</span>)/TCP(dport=21, flags=<span class="string">"S"</span>), timeout=1)
+
+<span class="keyword">for</span> snd, rcv <span class="keyword">in</span> ans:
+    <span class="keyword">if</span> rcv.ttl != 64 <span class="keyword">or</span> rcv[TCP].window != 8192:
+        <span class="keyword">print</span>(<span class="string">"ALERT! The echo changed."</span>)</code></pre>
+  <div class="sim-box"><strong>⚙ Red Team (Misleading the Honeypot)</strong><ol><li>The Blue Team probes the decoy SQL service every 5 seconds.</li><li>The attacker connects and copies data.</li><li>Echo latency rises; the sonar detects the change.</li></ol></div>
+  
+  <div class="ref-box"><strong>📖 References</strong><ul><li>MITRE Engage (2022)</li><li>NIST SP 800-53 SC-30</li></ul></div>
+  <span class="page-number">21</span>
+</div>
+<div class="page" id="page-22">
+  <div class="page-header">Chapter 11 — Identity Management (Concept)</div>
+  <h3><span class="badge">11.1</span> Snake Skin and Key Rotation <span class="difficulty diff-beginner">🟢 Beginner</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/California_Mountain_King_Snake_Shedding_Its_Skin.jpg?width=960" alt="Kingsnake shedding its skin (Lampropeltis zonata)" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🐍</div><div class="label">Snake Shedding</div><div class="sub">Ecdysis</div></div>
+  </div>
+  <div class="img-caption">Kingsnake shedding its skin (Lampropeltis zonata) — Photo: born1945 (Flickr) · <a href="https://commons.wikimedia.org/wiki/File:California_Mountain_King_Snake_Shedding_Its_Skin.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span>Snakes shed their old skin periodically (ecdysis). Worn tissue and parasites are left behind. The old skin can never be used again.</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li>Short-lived workload identity instead of static passwords.</li><li>Automatic rotation with HashiCorp Vault.</li><li>Cutting session-key lifetime to minutes.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Race condition: the narrow window before rotation.</li><li>Keeping access through session fixation.</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Case: Okta Support System Breach (2023)</strong>The attackers stole session tokens from HAR files uploaded to the support system and hijacked customer sessions. Lesson: short-lived tokens bound to a device or network lower the value of a stolen identity.</div>
+  <span class="page-number">22</span>
+</div>
+<div class="page" id="page-23">
+  <div class="page-header">Chapter 11 — Identity Management (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ Key rotation must be synchronised so that dependent services are not interrupted.</div>
+  <h3><span class="badge">11.2</span> HashiCorp Vault &amp; SPIFFE <span class="difficulty diff-intermediate">🟡 Intermediate</span></h3>
+  <p>In modern architectures the skin is shed with <strong>HashiCorp Vault</strong> (dynamic DB credentials) or <strong>SPIFFE/SPIRE</strong> (mTLS rotation). The TTL is chosen to fit the workload's ability to renew: SPIRE's default SVID lifetime is <strong>1 hour</strong>; for dynamic database credentials, values from minutes to hours are common. There is no universal “standard” TTL.</p>
+<pre><code><span class="comment"># HashiCorp Vault: dynamic DB role (shedding the skin)</span>
+vault write database/roles/finance-db-role \
+    db_name=postgresql \
+    creation_statements=<span class="string">"CREATE ROLE \"{{name}}\" WITH LOGIN
+        PASSWORD '{{password}}'
+        VALID UNTIL '{{expiration}}';"</span> \
+    default_ttl=<span class="string">"1h"</span> \
+    max_ttl=<span class="string">"24h"</span>
+
+<span class="comment"># When the application asks for a credential:</span>
+vault read database/creds/finance-db-role
+<span class="comment"># When the lease expires, Vault drops this role from the DB (old skin shed).</span></code></pre>
+  <div class="sim-box"><strong>⚙ Red Team (Token Theft)</strong><ol><li>In K8s an SA token is stolen through path traversal.</li><li>The token is a bound, time-limited projected token; its lifetime is set to 10 minutes (default 1 hour).</li><li>When the time runs out or the pod is deleted, the token becomes invalid; the attacker's window is limited to minutes.</li></ol></div>
+  
+  <div class="ref-box"><strong>📖 References</strong><ul><li>NIST SP 800-207</li><li>SPIFFE (CNCF)</li><li>HashiCorp Vault Docs</li><li>RFC 8705</li></ul></div>
+  <span class="page-number">23</span>
+</div>
+<div class="page" id="page-24">
+  <div class="page-header">Chapter 12 — Anti-Tamper &amp; Destruction (Concept)</div>
+  <h3><span class="badge">12.1</span> Apoptosis and Zeroize <span class="difficulty diff-beginner">🟢 Beginner</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Apoptotic_Jurkat_cells.jpg?width=960" alt="Apoptotic Jurkat cells (confocal microscopy)" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🧬</div><div class="label">Cellular Apoptosis</div><div class="sub">Programmed cell death</div></div>
+  </div>
+  <div class="img-caption">Apoptotic Jurkat cells (confocal microscopy) — Photo: Stepanek et al. (2011), PLoS ONE · CC BY · <a href="https://commons.wikimedia.org/wiki/File:Apoptotic_Jurkat_cells.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span>A cell with a severe infection quietly and irreversibly breaks up its own genetic material so the danger does not spread (apoptosis).</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li>Physical anti-tamper mesh.</li><li>Zeroising keys held in SRAM.</li><li>Brick mode through an e-fuse.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Exploiting memory remanence at low temperature.</li><li>Bypassing the sensors with a laser or acid.</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Case: Cold Boot Research (Princeton, 2008)</strong>Halderman et al. showed that DRAM contents stay readable for seconds after power is cut, and for minutes when cooled, and that disk-encryption keys can be recovered from memory. This is the reason for zeroisation and temperature sensors.</div>
+  <span class="page-number">24</span>
+</div>
+<div class="page" id="page-25">
+  <div class="page-header">Chapter 12 — Anti-Tamper &amp; Destruction (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ Zeroisation is permanent; forensics cannot reverse it.</div>
+  <h3><span class="badge">12.2</span> FIPS 140-3 and SRAM <span class="difficulty diff-advanced">🔴 Advanced</span></h3>
+  <p>The hardware counterpart of the zeroize protocol is <strong>FIPS 140-3 Level 3–4</strong> cryptographic modules (e.g. HSMs): Level 3 requires keys to be zeroised when a cover or door is opened; Level 4 requires a complete tamper envelope plus temperature/voltage protection. When the anti-tamper mesh breaks, a battery-backed chip erases the keys at once.</p>
+<pre><code><span class="comment">/* Hardware zeroize signal (C pseudocode) */</span>
+
+<span class="keyword">void</span> <span class="func">monitor_tamper_sensors</span>() {
+    <span class="keyword">if</span> (read_sensor(CASE_OPEN) || read_sensor(TEMP_ABNORMAL)) {
+        <span class="comment">/* 1. Zero the SRAM key (DNA fragmentation) */</span>
+        memset_secure(MASTER_KEY_ADDR, 0x00, KEY_LENGTH);
+
+        <span class="comment">/* 2. Trigger the SSD crypto-erase pin */</span>
+        trigger_gpio_pin(SSD_CRYPTO_ERASE_PIN, HIGH);
+
+        <span class="comment">/* 3. Blow the e-fuse (permanent brick) */</span>
+        blow_efuse(SYSTEM_BOOT_FUSE);
+    }
+}</code></pre>
+  <div class="sim-box"><strong>⚙ Red Team (Physical Tampering)</strong><ol><li>A military tablet falls into enemy hands.</li><li>The enemy forces the back cover open.</li><li>Light/pressure sensors trip.</li><li>The device erases the keys and blows the e-fuse within milliseconds.</li></ol></div>
+  <div class="metrics-box"><div><strong>ms range</strong>Destruction (design target)</div><div><strong>Permanent</strong>Brick</div><div><strong>FIPS 140-3</strong>L3+</div></div>
+  <div class="ref-box"><strong>📖 References</strong><ul><li>NIST SP 800-88 Rev.1</li><li>NIST SP 800-193</li><li>FIPS 140-3 / ISO/IEC 19790</li><li>Halderman et al. (2008) — Lest We Remember</li><li>ISO/IEC 11889 (TPM 2.0)</li></ul></div>
+  <span class="page-number">25</span>
+</div>
+<div class="page" id="page-26">
+  <div class="page-header">Chapter 13 — DDoS Mitigation (Concept)</div>
+  <h3><span class="badge">13.1</span> The Coral Reef and Wave Attenuation <span class="difficulty diff-beginner">🟢 Beginner</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Coral_reef_at_palmyra.jpg?width=960" alt="Coral reef, Palmyra Atoll" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🪸</div><div class="label">Coral Reef</div><div class="sub">Coral reef</div></div>
+  </div>
+  <div class="img-caption">Coral reef, Palmyra Atoll — Photo: Jim Maragos / USFWS · CC BY 2.0 · <a href="https://commons.wikimedia.org/wiki/File:Coral_reef_at_palmyra.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span>Coral reefs absorb <strong>on average 97%</strong> of the energy of storm waves heading for the shore. Their huge, fragmented, porous structure spreads the destructive force of the wave.</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li><strong>Anycast + traffic scrubbing:</strong> distributed attenuation at CDN/ISP level.</li><li><strong>BGP RTBH:</strong> dropping all traffic to the victim IP at the ISP (last resort).</li><li>Hiding the origin IP.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Discovering the origin IP (DNS history, TLS certificates).</li><li>Overwhelming capacity with amplification (NTP/DNS).</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Case: Dyn DDoS (2016)</strong>The Mirai botnet attacked Dyn DNS (press reports claimed about 1.2 Tbps; this was never confirmed); sites such as Twitter, Netflix and GitHub were unreachable for hours. Those that depended on a single DNS provider suffered most.</div>
+  <span class="page-number">26</span>
+</div>
+<div class="page" id="page-27">
+  <div class="page-header">Chapter 13 — DDoS Mitigation (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ A misconfigured BGP RTBH also cuts legitimate traffic; access does not return until the announcement is withdrawn.</div>
+  <h3><span class="badge">13.2</span> BGP RTBH and Scrubbing <span class="difficulty diff-advanced">🔴 Advanced</span></h3>
+  <p>When the attack volume exceeds the link and firewall capacity there are two options: <strong>scrubbing</strong> (traffic is diverted to a cleaning centre and legitimate traffic comes back — the true counterpart of the reef) and <strong>RTBH</strong> (<em>all</em> traffic to the victim IP is dropped at the ISP; that IP is sacrificed and the rest of the network is saved).</p>
+<pre><code><span class="comment">! Cisco IOS-XR: BGP RTBH (last resort: black hole)</span>
+<span class="comment">! The attacked IP 192.0.2.100 is routed to Null0 (the black hole)</span>
+
+<span class="keyword">route-policy</span> RTBH_EXPORT
+  <span class="keyword">if destination in</span> DDoS_VICTIM_IPS <span class="keyword">then</span>
+    <span class="comment">! Blackhole community defined by the ISP (well-known: 65535:666, RFC 7999)</span>
+    <span class="keyword">set community</span> (65000:666) additive
+  <span class="keyword">endif</span>
+<span class="keyword">end-policy</span>
+
+<span class="keyword">router bgp</span> 65000
+ <span class="keyword">address-family ipv4 unicast</span>
+  <span class="keyword">network</span> 192.0.2.100/32 route-policy RTBH_EXPORT
+<span class="keyword">router static</span>
+ <span class="keyword">address-family ipv4 unicast</span>
+  192.0.2.100/32 Null0</code></pre>
+  <div class="sim-box"><strong>⚙ Red Team (NTP Amplification)</strong><ol><li>The attacker sends spoofed packets to vulnerable NTP servers and launches 100 Gbps of traffic.</li><li>Firewall ports fill up and bandwidth is saturated.</li><li><strong>Blue Team:</strong> Preferably the traffic is diverted to a scrubbing centre. If there is none, or its capacity is exceeded, a /32 with the blackhole community is announced; the ISP drops traffic to that IP inside its own network.</li></ol></div>
+  
+  <div class="ref-box"><strong>📖 References</strong><ul><li>Ferrario et al. (2014) — Nature Communications</li><li>RFC 3882, RFC 5635, RFC 7999 — RTBH / Blackhole Community</li><li>NIST SP 800-189</li></ul></div>
+  <span class="page-number">27</span>
+</div>
+<div class="page" id="page-28">
+  <div class="page-header">Chapter 14 — Obfuscation &amp; Tarpit (Concept)</div>
+  <h3><span class="badge">14.1</span> The Butterflyfish and Misdirection <span class="difficulty diff-beginner">🟢 Beginner</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Chaetodon_capistratus1.jpg?width=960" alt="Foureye butterflyfish (Chaetodon capistratus)" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🐠</div><div class="label">Butterflyfish</div><div class="sub">Chaetodon capistratus</div></div>
+  </div>
+  <div class="img-caption">Foureye butterflyfish (Chaetodon capistratus) — Photo: Chris Huss / Florida Keys NMS (NOAA) · <a href="https://commons.wikimedia.org/wiki/File:Chaetodon_capistratus1.jpg" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span>Many butterflyfish carry a “false eye” spot (ocellus) near the tail, while the real eye is hidden by a dark band. The common hypothesis is that the spot draws a predator's strike away from the head and gives the fish a chance to escape the other way. Experiments with artificial prey show that eyespots can divert attacks; direct evidence in butterflyfish is limited.</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li><strong>Port obfuscation:</strong> the real SSH is hidden on port 4434 and protected with SPA.</li><li><strong>Tarpit (Endlessh):</strong> keeps the attacker busy for hours on standard port 22.</li><li>The real eye (the real service) cannot be seen from outside.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Scanning standard ports with Zmap/Masscan.</li><li>Brute-forcing the discovered port with Hydra.</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Case: Endlessh Tarpit</strong>An SSH tarpit keeps automated bots hanging for hours and eats up their resources.</div>
+  <span class="page-number">28</span>
+</div>
+<div class="page" id="page-29">
+  <div class="page-header">Chapter 14 — Obfuscation &amp; Tarpit (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ SPA and tarpits can make administrator access harder; always keep out-of-band access available.</div>
+  <h3><span class="badge">14.2</span> Endlessh &amp; SPA (fwknop) <span class="difficulty diff-intermediate">🟡 Intermediate</span></h3>
+  <p>The butterflyfish's false-eye trap is built with the SSH tarpit <strong>Endlessh</strong>. When an attacker connects to port 22 it sends an endless, very slow SSH banner; the connection hangs for hours. The real SSH is protected on a hidden port with <strong>fwknop (SPA)</strong>. Hiding a port is not security in itself; the real protection comes from SPA and key-based authentication.</p>
+<pre><code><span class="comment"># 1. Endlessh setup (the false eye - tarpit)</span>
+<span class="comment"># Listens on port 22 and sends one short random banner line every 10 seconds</span>
+Port 22
+DelayMilliseconds 10000
+MaxLineLength 32
+MaxClients 4096
+
+<span class="comment"># 2. Hiding the real SSH (the real eye - fwknop SPA)</span>
+<span class="comment"># Port 4434 is DROP (hidden) for everyone on the firewall.</span>
+<span class="comment"># The client first sends one encrypted, HMAC-authenticated UDP packet (SPA).</span>
+<span class="comment"># If fwknopd verifies it, it opens a temporary ALLOW rule in iptables.</span>
+<span class="func">fwknop</span> -A tcp/4434 -D 192.168.1.50 -a 192.168.1.100</code></pre>
+  <div class="sim-box"><strong>⚙ Red Team (Zmap and Brute Force)</strong><ol><li>A bot finds the open port 22 (the false eye).</li><li>The brute-force tool connects, but because the SSH banner never finishes it cannot start trying passwords.</li><li><strong>Blue Team:</strong> Endlessh keeps the connection open; the bot's connection threads stay busy. The real administrator enters quietly through the hidden port (the real eye) with SPA.</li></ol></div>
+  
+  <div class="ref-box"><strong>📖 References</strong><ul><li>Kjernsmo &amp; Merilaita (2013) — Proc. R. Soc. B: eyespots divert attacks</li><li>Neudecker (1989) — Environ. Biol. Fishes: false eyespots in butterflyfishes</li><li>Endlessh Documentation</li><li>fwknop — SPA</li><li>NIST SP 800-53 SC-7</li></ul></div>
+  <span class="page-number">29</span>
+</div>
+<div class="page" id="page-30">
+  <div class="page-header">Chapter 15 — Traffic Obfuscation (Concept)</div>
+  <h3><span class="badge">15.1</span> The Moth's Protean Escape and Sonar Jamming <span class="difficulty diff-beginner">🟢 Beginner</span></h3>
+  <div class="media-wrap">
+    <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Garden_Tiger_Moth.JPG?width=960" alt="Garden tiger moth (Arctia caja)" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentElement.classList.add('failed')">
+    <div class="placeholder"><div class="emoji">🦋</div><div class="label">Tiger Moth</div><div class="sub">Arctiinae</div></div>
+  </div>
+  <div class="img-caption">Garden tiger moth (Arctia caja) — Photo: Temple of Mara · <a href="https://commons.wikimedia.org/wiki/File:Garden_Tiger_Moth.JPG" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+  <div class="tech-box"><span class="tech-title">Biological Basis</span>Moths fleeing a bat fly in unpredictable zigzags, dives and loops; this <strong>“protean behaviour”</strong> stops the predator from predicting the next position. Some tiger moths (<em>Bertholdia trigona</em>) also produce ultrasonic clicks that jam the bat's sonar.</div>
+  <div class="team-grid">
+    <div class="team-box blue-team-box"><h4><svg class="icon icon-shield" viewBox="0 0 24 24"><path d="M12 2L4 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5l-8-3z"/></svg> Blue Team</h4><ul><li><strong>Randomised jitter:</strong> delaying backup/log transfers by a random amount.</li><li><strong>Packet chaffing:</strong> hiding real traffic among dummy packets.</li><li><code>RandomizedDelaySec</code> instead of a static cron time.</li></ul></div>
+    <div class="team-box red-team-box"><h4><svg class="icon icon-sword" viewBox="0 0 24 24"><path d="M6.9 3l4.6 4.6-1.4 1.4L5.5 4.4 3 4l.5 2.5 4.6 4.6-1.4 1.4L2.1 8 3 6.9 6.9 3zm10.2 0l3.9 3.9.9 1.1-4.6 4.6-1.4-1.4 4.6-4.6L21 4l-2.5-.5-4.6 4.6-1.4-1.4L17.1 3zM12 13l4 4-1.4 1.4-4-4-4 4L5.2 17l4-4 4 4L14.6 15l-4-4z"/></svg> Red Team</h4><ul><li>Finding the data-transfer times with traffic analysis.</li><li>Triggering MitM or DoS at exactly that time.</li></ul></div>
+  </div>
+  <div class="case-box"><strong>📚 Scientific Basis</strong>Humphries &amp; Driver (1970) described protean defence; Corcoran, Barber &amp; Conner (2009, <em>Science</em>) showed experimentally that a tiger moth jams bat sonar. Mapping: jitter = unpredictable flight; chaffing = sonar jamming.</div>
+  <span class="page-number">30</span>
+</div>
+<div class="page" id="page-31">
+  <div class="page-header">Chapter 15 — Traffic Obfuscation (Technical Deep Dive)</div>
+  <div class="ethics-warning">⚠️ Chaff raises bandwidth cost and does not replace encryption; use both together.</div>
+  <h3><span class="badge">15.2</span> Jitter and Packet Chaffing <span class="difficulty diff-advanced">🔴 Advanced</span></h3>
+  <p>To slip past the bat in ambush (an attacker watching the traffic), time entropy is added to data transfers with <strong>systemd RandomizedDelaySec</strong> and <strong>chaffing</strong> (dummy load) with Python. The attacker's ambush times out.</p>
+<pre><code><span class="comment"># 1. Systemd timer - protean timing (random trigger)</span>
+<span class="comment"># /etc/systemd/system/secure-backup.timer</span>
+[Unit]
+Description=Critical data sync (with jitter)
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+<span class="comment"># To defeat the ambush, instead of exactly 03:00</span>
+<span class="comment"># it fires at a random moment between 03:00 and 05:00 (7200 seconds)</span>
+RandomizedDelaySec=7200
+Persistent=<span class="keyword">true</span>
+
+[Install]
+WantedBy=timers.target
+
+<span class="comment"># 2. Python chaffing (sonar jamming / dummy payload)</span>
+<span class="keyword">import</span> random, os, socket
+
+<span class="keyword">def</span> <span class="func">send_chaff</span>(sock):
+    <span class="comment"># Dummy (junk) packets are sent to confuse the attacker's analysis tool</span>
+    dummy = os.urandom(random.randint(1024, 4096))
+    sock.send(dummy)</code></pre>
+  <div class="sim-box"><strong>⚙ Red Team (Traffic Analysis &amp; Ambush)</strong><ol><li>With Wireshark the attacker learns that the backup runs at exactly 03:00 every night.</li><li>Their script (the bat) lies in wait at 02:59 to cut the network traffic.</li><li><strong>Blue Team:</strong> 03:00 comes and no data arrives. The attacker's 10-minute script times out. The system sends the real data quietly at 04:12:33, hidden among dummy packets.</li></ol></div>
+  <div class="metrics-box"><div><strong>0–7200 s</strong>Jitter range</div><div><strong>TLS + chaff</strong>Together</div><div><strong>MTD</strong>Moving Target Defence</div></div>
+  <div class="ref-box"><strong>📖 References</strong><ul><li>Humphries &amp; Driver (1970) — Oecologia: Protean defence by prey animals</li><li>Corcoran, Barber &amp; Conner (2009) — Science: Tiger moth jams bat sonar</li><li>systemd.timer — RandomizedDelaySec</li></ul></div>
+  <span class="page-number">31</span>
+</div>
+
+<div class="page" id="page-32">
+  <div class="page-header">Appendix — Image Credits</div>
+  <h3>Image Credits</h3>
+  <p>All photographs in this book are loaded by link from Wikimedia Commons (an internet connection is required). The licence and full attribution text of each image are on its own file page; check the licence terms there before any printed or commercial use.</p>
+  <div class="ref-box" style="font-size:.8em"><strong>📷 Photographs</strong><ol style="margin:0;padding-left:18px"><li><strong>Common octopus (Octopus vulgaris)</strong> — albert kok. <a href="https://commons.wikimedia.org/wiki/File:Octopus2.jpg" target="_blank" rel="noopener">File page</a></li><li><strong>Slime mould plasmodium (Physarum polycephalum)</strong> — frankenstoen (CC BY 2.5). <a href="https://commons.wikimedia.org/wiki/File:Physarum_polycephalum_plasmodium.jpg" target="_blank" rel="noopener">File page</a></li><li><strong>Tardigrade, SEM (Milnesium tardigradum)</strong> — Schokraie et al. (2012), PLoS ONE (CC BY). <a href="https://commons.wikimedia.org/wiki/File:SEM_image_of_Milnesium_tardigradum_in_active_state_-_journal.pone.0045682.g001-2.png" target="_blank" rel="noopener">File page</a></li><li><strong>Ectomycorrhizal mycelium on roots (Picea glauca)</strong> — André-Ph.. <a href="https://commons.wikimedia.org/wiki/File:Mycorhizes-01.jpg" target="_blank" rel="noopener">File page</a></li><li><strong>Bacteriophages attached to a bacterial cell wall (TEM)</strong> — Graham Beards. <a href="https://commons.wikimedia.org/wiki/File:Phage.jpg" target="_blank" rel="noopener">File page</a></li><li><strong>Weaver bird building its nest (Ploceus cucullatus)</strong> — Charles J. Sharp. <a href="https://commons.wikimedia.org/wiki/File:Black-headed_weaver_%28Ploceus_cucullatus_bohndorffi%29_male_nest_building.jpg" target="_blank" rel="noopener">File page</a></li><li><strong>Beaver dam, Jämtland (Sweden)</strong> — Lars Falkdalen Lindahl. <a href="https://commons.wikimedia.org/wiki/File:Beaver_dam_J%C3%A4mtland.JPG" target="_blank" rel="noopener">File page</a></li><li><strong>Blue poison dart frog (Dendrobates tinctorius “azureus”)</strong> — Holger Krisp. <a href="https://commons.wikimedia.org/wiki/File:Dendrobates-tinctorius-blauer-baumsteiger.jpg" target="_blank" rel="noopener">File page</a></li><li><strong>Japanese honeybees forming a “heat ball” around hornets</strong> — Takahashi. <a href="https://commons.wikimedia.org/wiki/File:Honeybee_thermal_defence01.jpg" target="_blank" rel="noopener">File page</a></li><li><strong>Townsend's big-eared bat (Corynorhinus townsendii)</strong> — Ann Froschauer / USFWS. <a href="https://commons.wikimedia.org/wiki/File:Townsends_big-eared_bat_%286009182505%29.jpg" target="_blank" rel="noopener">File page</a></li><li><strong>Kingsnake shedding its skin (Lampropeltis zonata)</strong> — born1945 (Flickr). <a href="https://commons.wikimedia.org/wiki/File:California_Mountain_King_Snake_Shedding_Its_Skin.jpg" target="_blank" rel="noopener">File page</a></li><li><strong>Apoptotic Jurkat cells (confocal microscopy)</strong> — Stepanek et al. (2011), PLoS ONE (CC BY). <a href="https://commons.wikimedia.org/wiki/File:Apoptotic_Jurkat_cells.jpg" target="_blank" rel="noopener">File page</a></li><li><strong>Coral reef, Palmyra Atoll</strong> — Jim Maragos / USFWS (CC BY 2.0). <a href="https://commons.wikimedia.org/wiki/File:Coral_reef_at_palmyra.jpg" target="_blank" rel="noopener">File page</a></li><li><strong>Foureye butterflyfish (Chaetodon capistratus)</strong> — Chris Huss / Florida Keys NMS (NOAA). <a href="https://commons.wikimedia.org/wiki/File:Chaetodon_capistratus1.jpg" target="_blank" rel="noopener">File page</a></li><li><strong>Garden tiger moth (Arctia caja)</strong> — Temple of Mara. <a href="https://commons.wikimedia.org/wiki/File:Garden_Tiger_Moth.JPG" target="_blank" rel="noopener">File page</a></li></ol></div>
+  <span class="page-number">32</span>
+</div>
+
+</div>
+
+<!-- ================= CONTROLS ================= -->
+<div class="controls">
+  <button id="prevBtn" onclick="prevPage()">◀ Previous</button>
+  <button id="themeToggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+  <button onclick="window.print()">🖨 Save as PDF</button>
+  <button id="nextBtn" onclick="nextPage()">Next ▶</button>
+</div>
+
+<script>
+let currentPage = 0;
+const pages = document.querySelectorAll('.page');
+const totalPages = pages.length;
+
+function updatePages() {
+  pages.forEach((page, index) => {
+    page.classList.remove('active','next-page','flipped');
+    if (index < currentPage) page.classList.add('flipped');
+    else if (index === currentPage) page.classList.add('active');
+    else if (index === currentPage + 1) page.classList.add('next-page');
+  });
+  document.getElementById('prevBtn').disabled = currentPage === 0;
+  document.getElementById('nextBtn').disabled = currentPage === totalPages - 1;
+}
+function nextPage(){ if(currentPage<totalPages-1){currentPage++;updatePages();} }
+function prevPage(){ if(currentPage>0){currentPage--;updatePages();} }
+function goToPage(n){ if(n>=0&&n<totalPages){currentPage=n;updatePages();} }
+function toggleTheme(){
+  const body=document.body, btn=document.getElementById('themeToggle');
+  if(body.classList.contains('dark')){body.classList.remove('dark');btn.innerText='🌙 Dark Mode';}
+  else{body.classList.add('dark');btn.innerText='☀️ Light Mode';}
+}
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='ArrowRight'||e.key==='PageDown') nextPage();
+  if(e.key==='ArrowLeft'||e.key==='PageUp') prevPage();
+  if(e.key==='Home') goToPage(0);
+  if(e.key==='End') goToPage(totalPages-1);
+});
+
+document.querySelectorAll('.media-wrap img').forEach(img=>{
+  img.addEventListener('error',function(){this.parentElement.classList.add('failed');});
+});
+
+updatePages();
+</script>
+</body>
+</html>
